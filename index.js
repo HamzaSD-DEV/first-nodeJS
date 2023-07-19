@@ -1,28 +1,32 @@
 //import http
-const http = require('http');
-
-const port = 3636;
-const hostname = "localhost";
 //create the server
-const server= http.createServer((req,res)=>{
+const http = require('http'), fs = require("fs"), port = 3636, hostname = "localhost",
+    server = http.createServer((req, res) => {
+        let path;
+        let status;
+        console.log("url: ", req.url, "\nmethod: ", req.method);
+        if (req.url === "/" || req.url === "/home") {
+            path = "./Views/home.html";
+            status = 200;
+        } else if (req.url === "/about") {
+            path = "./Views/about.html";
+            status = 200;
+        } else {
+            path = "./Views/error.html";
+            status = 404;
+        }
+        fs.readFile(path,
+            (err, data) => {
+                res.setHeader("ContentType", "text/html");
+                res.statusCode=status;
+                res.write(data);
+                res.end();
 
-    console.log("url: ",req.url,"\nmethod: ",req.method);
-    if (req.url==="/"){
-        res.setHeader("ContentType","text/html");
-        res.write("<h1>hello this is the home page</h1>");
-        res.end();
-    }else if (req.url==="/about"){
-        res.setHeader("ContentType","text/html");
-        res.write("<h1>this is the about page</h1>");
-        res.end();
-    }else {
-        res.setHeader("ContentType","text/html");
-        res.write("<h1>404</h1>");
-        res.end();
-    }
+            }
+        )
 
-})
+    });
 //listen to the server
-server.listen(port,hostname,()=>{
-    console.log("server is listening on port: ",port)
+server.listen(port, hostname, () => {
+    console.log("server is listening on port: ", port)
 })
